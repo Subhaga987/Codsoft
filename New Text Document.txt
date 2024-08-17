@@ -1,33 +1,46 @@
-def calculator():
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.datasets import load_iris
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import OneHotEncoder
+import tensorflow as tf
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense
 
-    print("welcome to the simple calculator!")
-    num1=float(input("Enter the first number:"))
-    num2=float(input("Enter the second number:"))
+# Load the iris dataset
+iris = load_iris()
+X = iris.data  # Features
+y = iris.target  # Target classes
 
-    print("choose an operation:")
-    print("1.Addition(+)")
-    print("2.subtraction(-)")
-    print("3.Multiplication(*)")
-    print("4.Division(/)")
+# One-Hot Encode the target classes
+encoder = OneHotEncoder(sparse=False)
+y = encoder.fit_transform(y.reshape(-1, 1))
 
-    operation=input("enter the number corresponding to the operation")
+# Split the dataset into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-    if operation=='1':
-        result=num1+num2
-        print(f"The result of {num1}+{num2} is {result}")
-    elif operation=='2':
-        result=num1-num2
-        print(f"The result of {num1}-{num2} is {result}")
-    elif operation=='3':
-        result=num1*num2
-        print(f"The result of {num1}*{num2} is {result}")
-    elif operation=='4':
-        if num2 !=0:
-            result=num1/num2
-            print(f"The result of {num1}/{num2} is {result}")
-        else:
-            print("Error: Division by zero is not allowed")
-        else:
-            print("invalid operation choice.please choose a valid operation")
+# Define the model
+model = Sequential([
+    Dense(10, activation='relu', input_shape=(X_train.shape[1],)),  # Input layer with 10 neurons
+    Dense(10, activation='relu'),  # Hidden layer with 10 neurons
+    Dense(3, activation='softmax')  # Output layer with 3 neurons (one for each class)
+])
 
-            
+# Compile the model
+model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+
+# Train the model
+history = model.fit(X_train, y_train, epochs=50, validation_data=(X_test, y_test))
+
+# Evaluate the model
+test_loss, test_accuracy = model.evaluate(X_test, y_test)
+print(f"Test Accuracy: {test_accuracy:.4f}")
+
+# Plot the training and validation accuracy
+plt.plot(history.history['accuracy'], label='Train Accuracy')
+plt.plot(history.history['val_accuracy'], label='Validation Accuracy')
+plt.xlabel('Epochs')
+plt.ylabel('Accuracy')
+plt.legend()
+plt.show()
