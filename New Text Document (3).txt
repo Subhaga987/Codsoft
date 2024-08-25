@@ -1,0 +1,48 @@
+import os
+import shutil
+
+def organize_files(source_dir, dest_dir, keywords, file_extension=".txt"):
+    """
+    Organize files based on keywords and move them to specific directories.
+
+    Parameters:
+    - source_dir (str): The directory containing files to be organized.
+    - dest_dir (str): The base directory where files will be moved.
+    - keywords (dict): A dictionary where keys are folder names and values are lists of keywords.
+    - file_extension (str): The file extension to filter files, default is ".txt".
+    """
+    if not os.path.exists(dest_dir):
+        os.makedirs(dest_dir)
+
+    for folder in keywords.keys():
+        folder_path = os.path.join(dest_dir, folder)
+        if not os.path.exists(folder_path):
+            os.makedirs(folder_path)
+
+    for file_name in os.listdir(source_dir):
+        if file_name.endswith(file_extension):
+            file_path = os.path.join(source_dir, file_name)
+            with open(file_path, 'r') as file:
+                content = file.read().lower()
+                moved = False
+                for folder, words in keywords.items():
+                    if any(word in content for word in words):
+                        shutil.move(file_path, os.path.join(dest_dir, folder, file_name))
+                        moved = True
+                        break
+                if not moved:
+                    shutil.move(file_path, os.path.join(dest_dir, "Others", file_name))
+
+# Define the source and destination directories
+source_directory = "/path/to/source"
+destination_directory = "/path/to/destination"
+
+# Define keywords for categorizing files
+keywords_dict = {
+    "Errors": ["error", "fail", "exception"],
+    "Logs": ["log", "record", "history"],
+    "Reports": ["report", "summary", "analysis"]
+}
+
+# Organize the files
+organize_files(source_directory, destination_directory, keywords_dict)
