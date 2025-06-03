@@ -1,0 +1,10 @@
+num1=int(input("enter a number"))
+num2=int(input("enter a number"))
+add_res=num1+num2
+sub_res=num1-num2
+mul_res=num1*num2
+div_res=num1//num2
+print(str(num1), "+" ,str(num2), "=", str(add_res))
+print(str(num1), "-" ,str(num2), "=" ,str(sub_res))
+print(str(num1), "*" ,str(num2), "=" ,str(mul_res))
+print(str(num1), "//" ,str(num2), "=" ,str(div_res))
